@@ -1,0 +1,282 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Read the uploaded file and understand its content.  \nSummarize the main points in simple language.  \nHighlight any important info, patterns, or sections.\n\nThen, at the end, provide 3–5 relevant tags based on the document content, in a separate line. Use lowercase and comma-separated format.\n\npdf content:  \n{{ $json.text }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -640,
+        160
+      ],
+      "id": "c73eb671-40de-4a4e-b1a9-479e1e5ca701",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1iICp9llOizeeIofS8EcVfZpYtPiuwVO8",
+          "mode": "list",
+          "cachedResultName": " 'EVS.pdf'",
+          "cachedResultUrl": "https://drive.google.com/file/d/1iICp9llOizeeIofS8EcVfZpYtPiuwVO8/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -380,
+        -60
+      ],
+      "id": "b1c57334-a56f-445e-8f3f-71df22ec5521",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "wlACWvJn4HUL5l9o",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -60
+      ],
+      "id": "261207c1-b2e8-4ee1-affa-36b05b5d2524",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        -60
+      ],
+      "id": "7d3d3835-b048-44f8-b627-9c22032f3f9a",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        360
+      ],
+      "id": "23e72115-4167-4183-8d57-b25cb24c4cff",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Lnsp8HV3uSdGEO5z",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7afc6bce-f578-4cf4-81dc-ece709e4edff",
+              "name": "summary",
+              "value": "={{ $json.output.split(\"Tags:\")[0].trim() }}\n",
+              "type": "string"
+            },
+            {
+              "id": "f147e0c4-116f-448c-bac5-41425b1412ec",
+              "name": "tag",
+              "value": "={{ ($json.output.split(\"Tags:\")[1] || \"untagged\").trim() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -300,
+        160
+      ],
+      "id": "d2da8a2b-dcc3-43ff-950b-edfad37fbf43",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "17Bu4CqCuihHd8SLhej6TUWwpvQtp8biLkqpN2sPjZ_E",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Bu4CqCuihHd8SLhej6TUWwpvQtp8biLkqpN2sPjZ_E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Bu4CqCuihHd8SLhej6TUWwpvQtp8biLkqpN2sPjZ_E/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "TAGS": "={{ $json.tag }}",
+            "SUMMARY": "={{ $json.summary }}"
+          },
+          "matchingColumns": [
+            "TAGS"
+          ],
+          "schema": [
+            {
+              "id": "TAGS",
+              "displayName": "TAGS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "SUMMARY",
+              "displayName": "SUMMARY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -120,
+        160
+      ],
+      "id": "d94311fa-472c-469f-8ed5-cea9b277bb17",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ghKelgFCoiOfoxmA",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "9f598b4c-06e7-4c51-8d3b-7ffb11a4381a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "59b62491ae24383e0bd76f3c9d836a5d49b31dada29d803cc0bf32b1cb186cf2"
+  },
+  "id": "L3pZQTmfpOO3n1cs",
+  "tags": []
+}
