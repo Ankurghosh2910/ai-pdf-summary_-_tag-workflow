@@ -65,7 +65,7 @@ This project is a local **n8n workflow** that automates the process of summarizi
 
 **Ankur Ghosh**  
 🎓 B.Sc. (Hons) in Computer Science (AIML)  
-🔗 [LinkedIn]((https://www.linkedin.com/in/ankur-ghosh-344948246/))  
+🔗 [LinkedIn](https://www.linkedin.com/in/ankur-ghosh-344948246/)  
 📬 Contact: ankurghosh@email.com 
 
 ---
