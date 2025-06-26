@@ -15,6 +15,13 @@ This project is a local **n8n workflow** that automates the process of summarizi
 
 ---
 
+## Screen shot
+![workflow!](https://github.com/user-attachments/assets/379c4438-bd38-4077-8860-0683833b3711)
+
+
+
+---
+
 ## 🛠 Tech Stack
 
 - [n8n](https://n8n.io/) (self-hosted)
